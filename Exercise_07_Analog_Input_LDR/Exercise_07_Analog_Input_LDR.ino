@@ -1,15 +1,15 @@
 void setup() {
-  Serial.begin(9600); 
+  Serial.begin(115200); 
 }
 
 void loop() {  
-  int sensorValue = analogRead(A0);
-  float sensorVoltage = sensorValue * (3.3 / 1024.0);
+  int adc = analogRead(34);
+  float voltage = adc * (3.3 / 4095.0);
   
   Serial.print("ADC Value: ");
-  Serial.print(sensorValue);
+  Serial.print(adc);
   Serial.print("\tVoltage: ");
-  Serial.print(sensorVoltage);
+  Serial.print(voltage);
   Serial.println(" V");
   
   delay(1000);

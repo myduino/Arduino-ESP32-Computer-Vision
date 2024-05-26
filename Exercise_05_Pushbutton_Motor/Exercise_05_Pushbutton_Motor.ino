@@ -3,7 +3,7 @@ int button = 16; // Pushbutton is connected to D0
 int temp = 0; // Temporary variable for reading the button pin status
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(led, OUTPUT);
   pinMode(button, INPUT);
 }
