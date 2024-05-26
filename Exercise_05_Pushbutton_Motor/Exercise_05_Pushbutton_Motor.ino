@@ -1,27 +1,23 @@
-int led = 5; // LED Pin (D1)
-int button = 16; // Pushbutton is connected to D0
-int temp = 0; // Temporary variable for reading the button pin status
+const int buttonPin = 4;  // the number of the pushbutton pin
+const int ledPin =  5;    // the number of the LED pin
 
 void setup() {
   Serial.begin(115200);
-  pinMode(led, OUTPUT);
-  pinMode(button, INPUT);
+
+  pinMode(buttonPin, INPUT);  // declaring GPIO4 as an INPUT pin.
+  pinMode(ledPin, OUTPUT); // declaring GPIO5 as an OUTPUT pin.
 }
 
 void loop() {
-  // declare LED as output
-  // declare push button as input
-  temp = digitalRead(button);
+
+  int buttonState = digitalRead(buttonPin);
+  Serial.println(pbState);
   
-  if (temp == HIGH) {
-    digitalWrite(led, HIGH);
+  if (buttonState == HIGH) {
+    digitalWrite(ledPin, HIGH);
     Serial.println("Motor Start");
-    delay(1000);
-  }
-  
-  else {
-    digitalWrite(led, LOW);
+  } else {
+    digitalWrite(ledPin, LOW);
     Serial.println("Motor Stop");
-    delay(1000);
   }
 }

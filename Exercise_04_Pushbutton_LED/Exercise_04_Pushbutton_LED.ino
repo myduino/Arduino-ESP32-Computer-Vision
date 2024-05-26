@@ -16,8 +16,7 @@ void loop() {
   
   if(buttonState == HIGH){
     digitalWrite(ledPin, HIGH);
-  } 
-  else {
+  } else {
     digitalWrite(ledPin, LOW);
   }
 }
