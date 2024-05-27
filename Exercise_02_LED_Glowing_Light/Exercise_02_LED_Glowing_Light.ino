@@ -6,12 +6,12 @@ void setup() {
 }
 
 void loop() {
-  // function for() to create decremental value by 1 start from 255 --> 0
-  // from OFF LED to linear increasing brightness, for active-low circuit.
-  for(int brightness = 255; brightness >= 0; brightness--){   
+  // for() statement to create incremental value by +1 start from 0 --> 255
+  // from the LED OFF to linear increasing brightness.
+  for(int brightness = 0; brightness <= 255; brightness++){   
     // ledcWrite() function will generate PWM output signal according to variable brightness value
     // 1st argument: PWM channel number.
-    // 2nd argument: Tone frequency.
+    // 2nd argument: PWM value.
     ledcWrite(0, brightness);
     delay(15);
   }

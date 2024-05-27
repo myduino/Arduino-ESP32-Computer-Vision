@@ -5,6 +5,7 @@ void setup() {
 void loop() {
   if(Serial.available()) {
     String data = Serial.readStringUntil('\n');
+    
     Serial.println(data);
   }
 }
