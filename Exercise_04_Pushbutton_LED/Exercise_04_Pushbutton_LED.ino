@@ -2,6 +2,8 @@ const int buttonPin = 4;  // the number of the pushbutton pin
 const int ledPin =  5;    // the number of the LED pin
 
 void setup() {
+  Serial.begin(115200); 
+  
   pinMode(buttonPin, INPUT);  // declaring GPIO4 as an INPUT pin.
   pinMode(ledPin, OUTPUT); // declaring GPIO5 as an OUTPUT pin.
 
