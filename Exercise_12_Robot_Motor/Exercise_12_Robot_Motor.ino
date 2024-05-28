@@ -1,4 +1,4 @@
-#include "Motor.h"
+#include "motor.h"
 
 void setup() {
   i2c_init();
