@@ -10,8 +10,8 @@
 #include "motor.h"
 
 // Replace with your network credentials
-const char* ssid = "ERED PT1";
-const char* password = "9893783100";
+const char* ssid = "";
+const char* password = "";
 
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
