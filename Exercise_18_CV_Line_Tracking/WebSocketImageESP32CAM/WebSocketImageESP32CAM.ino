@@ -137,7 +137,6 @@ esp_err_t init_camera() {
   return ESP_OK;
 };
 
-
 esp_err_t init_wifi() {
   WiFi.begin(ssid, password);
   Serial.println("Connecting to Wi-Fi AP ");

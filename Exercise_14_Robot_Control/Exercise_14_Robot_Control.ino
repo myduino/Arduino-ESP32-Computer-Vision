@@ -2,18 +2,16 @@
 #include "esp_camera.h"
 #include "esp_timer.h"
 #include "img_converters.h"
-#include "Arduino.h"
 #include "fb_gfx.h"
 #include "soc/soc.h"             // disable brownout problems
 #include "soc/rtc_cntl_reg.h"    // disable brownout problems
 #include "esp_http_server.h"
-#include "Motor.h"
+#include "html_index.h"
+#include "motor.h"
 
 // Replace with your network credentials
-const char* ssid = "";
-const char* password = "";
-
-#define PART_BOUNDARY     "123456789000000000000987654321"
+const char* ssid = "ERED PT1";
+const char* password = "9893783100";
 
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
@@ -32,66 +30,14 @@ const char* password = "";
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+#define PART_BOUNDARY     "123456789000000000000987654321"
+
 static const char* _STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
 static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
 httpd_handle_t camera_httpd = NULL;
 httpd_handle_t stream_httpd = NULL;
-
-static const char PROGMEM INDEX_HTML[] = R"rawliteral(
-<html>
-  <head>
-    <title>Robot Control</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-      body { font-family: Arial; text-align: center; margin:0px auto; padding-top: 30px;}
-      table { margin-left: auto; margin-right: auto; }
-      td { padding: 8 px; }
-      .button {
-        background-color: #371F76;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        margin: 6px 3px;
-        cursor: pointer;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        -webkit-tap-highlight-color: rgba(0,0,0,0);
-      }
-      img {  width: auto ;
-        max-width: 100% ;
-        height: auto ; 
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Robot Control</h1>
-    <img src="" id="photo" >
-    <table>
-      <tr><td colspan="3" align="center"><button class="button" onmousedown="toggleCheckbox('forward');" ontouchstart="toggleCheckbox('forward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Forward</button></td></tr>
-      <tr><td align="center"><button class="button" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Left</button></td><td align="center"><button class="button" onmousedown="toggleCheckbox('stop');" ontouchstart="toggleCheckbox('stop');">Stop</button></td><td align="center"><button class="button" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Right</button></td></tr>
-      <tr><td colspan="3" align="center"><button class="button" onmousedown="toggleCheckbox('backward');" ontouchstart="toggleCheckbox('backward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">Backward</button></td></tr>                   
-    </table>
-   <script>
-   function toggleCheckbox(x) {
-     var xhr = new XMLHttpRequest();
-     xhr.open("GET", "/action?go=" + x, true);
-     xhr.send();
-   }
-   window.onload = document.getElementById("photo").src = window.location.href.slice(0, -1) + ":81/stream";
-  </script>
-  </body>
-</html>
-)rawliteral";
 
 static esp_err_t index_handler(httpd_req_t *req){
   httpd_resp_set_type(req, "text/html");
@@ -187,25 +133,19 @@ static esp_err_t cmd_handler(httpd_req_t *req){
     return ESP_FAIL;
   }
 
-  sensor_t * s = esp_camera_sensor_get();
   int res = 0;
   
   if(!strcmp(variable, "forward")) {
     forward(100, 100);
-  }
-  else if(!strcmp(variable, "left")) {
+  } else if(!strcmp(variable, "left")) {
     turn_left(100, 100);
-  }
-  else if(!strcmp(variable, "right")) {
+  } else if(!strcmp(variable, "right")) {
     turn_right(100, 100);
-  }
-  else if(!strcmp(variable, "backward")) {
+  } else if(!strcmp(variable, "backward")) {
     backward(100, 100);
-  }
-  else if(!strcmp(variable, "stop")) {
+  } else if(!strcmp(variable, "stop")) {
     stop();
-  }
-  else {
+  } else {
     res = -1;
   }
 
@@ -233,18 +173,22 @@ void startCameraServer(){
     .handler   = cmd_handler,
     .user_ctx  = NULL
   };
+  
   httpd_uri_t stream_uri = {
     .uri       = "/stream",
     .method    = HTTP_GET,
     .handler   = stream_handler,
     .user_ctx  = NULL
   };
+  
   if (httpd_start(&camera_httpd, &config) == ESP_OK) {
     httpd_register_uri_handler(camera_httpd, &index_uri);
     httpd_register_uri_handler(camera_httpd, &cmd_uri);
   }
+  
   config.server_port += 1;
   config.ctrl_port += 1;
+  
   if (httpd_start(&stream_httpd, &config) == ESP_OK) {
     httpd_register_uri_handler(stream_httpd, &stream_uri);
   }
@@ -289,6 +233,10 @@ void setup() {
     Serial.printf("Camera init failed with error 0x%x", err);
     return;
   }
+
+  sensor_t * s = esp_camera_sensor_get();
+  s->set_vflip(s, 1); // 0: disable, 1: enable
+  s->set_hmirror(s, 1);
 
   WiFi.begin(ssid, password);
 
