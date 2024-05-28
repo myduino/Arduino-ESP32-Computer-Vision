@@ -7,7 +7,7 @@
 #define SDA 14
 #define SCL 13
 
-uint8_t i2c_addr = 0x30;
+uint8_t I2C_ADDR = 0x30;
 
 uint8_t M1_PWM = 0x01;
 uint8_t M1_IN = 0x02;
@@ -21,7 +21,7 @@ void i2c_init() {
 // motor: Motor
 // pwmvalue：PWM Value
 void i2c_write(uint8_t motor, uint8_t pwmvalue) {
-  Wire.beginTransmission(i2c_addr);
+  Wire.beginTransmission(I2C_ADDR);
   Wire.write(motor);
   Wire.write(pwmvalue);
   Wire.endTransmission();
